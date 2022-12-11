@@ -135,7 +135,7 @@ DefaultInjector.provideValue<Config>("Config", Config("test"))
 ### 获取服务
 ```cj
 injector.invoke<DBService>()
-injector.invokeName<Config>("Config")
+injector.invoke<Config>("Config")
 ```
 
 ### 健康检查
@@ -218,5 +218,25 @@ let injector = Injector(OptArgs())
 >注册的服务， 由provide注册的，复制将变回未加载状态; provideValue注册的将复制一个一样的
 ```cj
 let injector = DefaultInjector.clone()
-injector.invokeName<Config>("Config")
+injector.invoke<Config>("Config")
+```
+
+### 接口
+```
+// 用户定义获取类名方法，小项目建议返回类名，微服务或类库使用modulename.pkgname.typename防止重名
+public interface GlobalTypeName {
+   static func getGlobalTypeName():String
+}
+// 用于代替无参构建方法, 之后可以直接`injector.invoke<CustomType>()`, injector.invoke<CustomType>("CustomType") 注册
+public interface NewInstance<T> {
+    static func new():T
+}
+// 自定义健康检查方法
+public interface healthcheckableService {
+    func healthcheck():HealthState
+}
+// 自定义关闭服务方法，比如关闭 数据库连接， 调用shutdown时会调用该方法
+public interface ShutdownableService {
+    func shutdown():ShutdownState
+}
 ```

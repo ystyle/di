@@ -8,10 +8,16 @@ extend Injector {
             return DefaultInjector
         }
     }
+    public func provide<T>() where T <: GlobalTypeName & NewInstance<T> {
+        this.provide<T>(T.getGlobalTypeName())
+    }
+    public func provide<T>(name:String) where T <: NewInstance<T> {
+        this.provide<T>(name, {i => T.new()})
+    }
     public func provide<T>(pvd:Provider<T>) where T <: GlobalTypeName {
         this.provide<T>(T.getGlobalTypeName(), pvd)
     }
-    public func provide<T>(name:String, pvd:Provider<T>) {
+    public func provide<T>(name:String, pvd:Provider<T>):Unit {
         if (this.exists(name)) {
             throw Exception("DI: service `${name}` has already been declared")
         }
@@ -47,7 +53,7 @@ extend Injector {
         this.overrideValue<T>(T.getGlobalTypeName(), value)
     }
 
-    public func overrideValue<T>(name:String, value:T) {
+    public func overrideValue<T>(name:String, value:T):Unit {
         let svc = ServiceEager<T>(name, value)
         this.set(name, value)
         this.log?("service ${name} overridden")
