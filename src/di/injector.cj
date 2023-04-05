@@ -90,7 +90,6 @@ public class Injector {
             let opt = this.services.get(name)
             if (let Some(v) = opt) {
                 svc = v
-                ()
             } else{
                 return ShutdownState.Error("DI: could not find service `${name}`")
             }

@@ -2,14 +2,14 @@ package di
 
 public struct ServiceEager<T> <: Service<T>{
     let instance:T
-    let l_name:String
+    let _name:String
     public prop let name:String {
         get() {
-            return this.l_name
+            return this._name
         }
     }
     public init(name:String, instance:T) {
-        this.l_name = name
+        this._name = name
         this.instance = instance
     }
     public func getInstance(injector:Injector):Option<T> {

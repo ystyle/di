@@ -1,21 +1,19 @@
 package di
-from std import sync.ReentrantMutex
-
 type Provider<T> = (Injector) -> Option<T> 
 
 public class ServiceLazy<T> <: Service<T> {
     let mu = ReentrantMutex()
-    let l_name:String
+    let _name:String
     var instance:Option<T> = None
     var built:Bool = false
     let pvd:Provider<T>
     public prop let name:String {
         get() {
-            return this.l_name
+            return this._name
         }
     }
     public init(name:String, pvd:Provider<T>) {
-        this.l_name = name
+        this._name = name
         this.pvd = pvd
     }
     public func getInstance(injector:Injector):Option<T> {
