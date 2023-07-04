@@ -3,7 +3,7 @@ package di
 public struct ServiceEager<T> <: Service<T>{
     let instance:T
     let _name:String
-    public prop let name:String {
+    public prop name:String {
         get() {
             return this._name
         }

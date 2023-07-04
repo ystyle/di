@@ -3,7 +3,7 @@ package di
 public let DefaultInjector = Injector()
 
 extend Injector {
-    public prop let default:Injector {
+    public prop default:Injector {
         get() {
             return DefaultInjector
         }

@@ -7,9 +7,9 @@ public class ServiceLazy<T> <: Service<T> {
     var instance:Option<T> = None
     var built:Bool = false
     let pvd:Provider<T>
-    public prop let name:String {
+    public prop name:String {
         get() {
-            return this._name
+            this._name
         }
     }
     public init(name:String, pvd:Provider<T>) {
