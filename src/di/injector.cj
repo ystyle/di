@@ -57,7 +57,7 @@ public class Injector {
         let service:Any
         synchronized(this.mu) {
             let opt = this.services.get(name)
-            if (let None = opt) {
+            if (let None <- opt) {
                 this.log?("DI: could not find service `${name}`")
                 return Error("DI: could not find service `${name}`")
             }
@@ -77,7 +77,7 @@ public class Injector {
         let keys = m.keys().toArray()
         for (key in keys) {
             let result = this.shutdownImplem(key)
-            if (let Error(msg) = result) {
+            if (let Error(msg) <- result) {
                 return result
             }
         }
@@ -88,7 +88,7 @@ public class Injector {
         var svc:Any
         synchronized(this.mu) {
             let opt = this.services.get(name)
-            if (let Some(v) = opt) {
+            if (let Some(v) <- opt) {
                 svc = v
             } else{
                 return ShutdownState.Error("DI: could not find service `${name}`")

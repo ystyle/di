@@ -69,7 +69,7 @@ extend Injector {
                 match (svc) {
                     case s:Service<T> => 
                     let instance = s.getInstance(this)
-                    if (let None = instance) {
+                    if (let None <- instance) {
                         return None
                     }
                     this.onServiceInvoke(name)
