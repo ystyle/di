@@ -9,7 +9,7 @@ public class ServiceLazy<T> <: Service<T> {
     let pvd:Provider<T>
     public prop name:String {
         get() {
-            return this._name
+            this._name
         }
     }
     public init(name:String, pvd:Provider<T>) {
