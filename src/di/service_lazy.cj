@@ -7,7 +7,7 @@ public class ServiceLazy<T> <: Service<T> {
     var instance:Option<T> = None
     var built:Bool = false
     let pvd:Provider<T>
-    public prop let name:String {
+    public prop name:String {
         get() {
             return this._name
         }
@@ -29,7 +29,7 @@ public class ServiceLazy<T> <: Service<T> {
     }
     private func build(injector:Injector): Bool {
        let result = this.pvd(injector)
-        if (let Some(v) = result) {
+        if (let Some(v) <- result) {
             this.instance = result
             this.built = true
             return true

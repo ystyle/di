@@ -1,7 +1,7 @@
 package di
 
 public interface Service<T> <: healthcheckableService & ShutdownableService & CloneableService {
-    prop let name:String
+    prop name:String
     func getInstance(injector:Injector):Option<T>
 }
 

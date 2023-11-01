@@ -1,21 +1,22 @@
 package di
+from std import reflect.TypeInfo
 
 public let DefaultInjector = Injector()
 
 extend Injector {
-    public prop let default:Injector {
+    public prop default:Injector {
         get() {
             return DefaultInjector
         }
     }
-    public func provide<T>() where T <: GlobalTypeName & NewInstance<T> {
-        this.provide<T>(T.getGlobalTypeName())
+    public func provide<T>():Unit where T <: NewInstanceInterface<T> {
+        this.provide<T>(TypeInfo.of<T>().qualifiedName)
     }
-    public func provide<T>(name:String) where T <: NewInstance<T> {
+    public func provide<T>(name:String):Unit where T <: NewInstanceInterface<T> {
         this.provide<T>(name, {i => T.new()})
     }
-    public func provide<T>(pvd:Provider<T>) where T <: GlobalTypeName {
-        this.provide<T>(T.getGlobalTypeName(), pvd)
+    public func provide<T>(pvd:Provider<T>):Unit {
+        this.provide<T>(TypeInfo.of<T>().qualifiedName, pvd)
     }
     public func provide<T>(name:String, pvd:Provider<T>):Unit {
         if (this.exists(name)) {
@@ -26,8 +27,8 @@ extend Injector {
         this.log?("service ${name} injected")
     }
 
-    public func provideValue<T>(value:T):Unit where T <: GlobalTypeName {
-        provideValue<T>(T.getGlobalTypeName(), value)
+    public func provideValue<T>(value:T):Unit {
+        provideValue<T>(TypeInfo.of<T>().qualifiedName, value)
     }
 
     public func provideValue<T>(name:String, value:T):Unit {
@@ -39,8 +40,8 @@ extend Injector {
         this.log?("service ${name} injected")
     }
 
-    public func overrideProvider<T>(pvd:Provider<T>):Unit where T <: GlobalTypeName {
-        this.overrideProvider<T>(T.getGlobalTypeName(), pvd)
+    public func overrideProvider<T>(pvd:Provider<T>):Unit {
+        this.overrideProvider<T>(TypeInfo.of<T>().qualifiedName, pvd)
     }
 
     public func overrideProvider<T>(name:String, pvd:Provider<T>):Unit {
@@ -49,8 +50,8 @@ extend Injector {
         this.log?("service ${name} overridden")
     }
 
-    public func overrideValue<T>(value:T) where T <: GlobalTypeName {
-        this.overrideValue<T>(T.getGlobalTypeName(), value)
+    public func overrideValue<T>(value:T):Unit {
+        this.overrideValue<T>(TypeInfo.of<T>().qualifiedName, value)
     }
 
     public func overrideValue<T>(name:String, value:T):Unit {
@@ -58,8 +59,8 @@ extend Injector {
         this.set(name, value)
         this.log?("service ${name} overridden")
     }
-    public func invoke<T>():Option<T> where T <: GlobalTypeName  {
-        this.invoke<T>(T.getGlobalTypeName())
+    public func invoke<T>():Option<T>  {
+        this.invoke<T>(TypeInfo.of<T>().qualifiedName)
     }
     public func invoke<T>(name:String):Option<T> {
         let svcAny = this.get(name)
@@ -69,7 +70,7 @@ extend Injector {
                 match (svc) {
                     case s:Service<T> => 
                     let instance = s.getInstance(this)
-                    if (let None = instance) {
+                    if (let None <- instance) {
                         return None
                     }
                     this.onServiceInvoke(name)
@@ -81,16 +82,15 @@ extend Injector {
                 }
         }
     }
-    public func healthCheck<T>():HealthState where T <: GlobalTypeName{
-        return this.healthCheck<T>(T.getGlobalTypeName())
+    public func healthCheck<T>():HealthState {
+        return this.healthCheck<T>(TypeInfo.of<T>().qualifiedName)
     }
 
     public func healthCheck<T>(name:String):HealthState {
         return this.healthcheckImplem(name)
     }
-    public func shutdown<T>():ShutdownState where T <: GlobalTypeName{
-        let name = T.getGlobalTypeName()
-        this.shutdownImplem(name)
+    public func shutdown<T>():ShutdownState {
+        this.shutdownImplem(TypeInfo.of<T>().qualifiedName)
     }
     public func shutdown<T>(name:String):ShutdownState{
         this.shutdownImplem(name)

@@ -22,7 +22,7 @@ from di import di.*
 
 main():Unit {
     let injector = Injector()
-    // 实现GlobalTypeName接口的类型， 可以直接以T.getGlobalTypeName()为名称注册
+    // 使用类型全限定名注册
     injector.provide<CarService>(NewCarService)
     // intetface 类型需要指定名称
     injector.provide<EngineService>("EngineService", NewEngineService)
@@ -223,10 +223,6 @@ injector.invoke<Config>("Config")
 
 ### 接口
 ```
-// 用户定义获取类名方法，小项目建议返回类名，微服务或类库使用modulename.pkgname.typename防止重名
-public interface GlobalTypeName {
-   static func getGlobalTypeName():String
-}
 // 用于代替无参构建方法, 之后可以直接`injector.invoke<CustomType>()`, injector.invoke<CustomType>("CustomType") 注册
 public interface NewInstance<T> {
     static func new():T
