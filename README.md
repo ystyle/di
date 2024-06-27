@@ -58,7 +58,7 @@ func NewEngineService(injector:Injector):Option<EngineService> {
 ```
 
 ```
-class CarService <: ShutdownableService & GlobalTypeName {
+class CarService <: ShutdownableService {
     CarService(let engine:EngineService){}
 
     public func start() {
@@ -67,10 +67,6 @@ class CarService <: ShutdownableService & GlobalTypeName {
     public func shutdown():ShutdownState {
         println("car stopped")
         return ShutdownState.Shutdowned
-    }
-
-    public static func getGlobalTypeName():String {
-        return "CarService"
     }
 }
 
@@ -96,11 +92,8 @@ DefaultInjector.listInvokedServices()
 ### 注册服务
 延迟加载
 ```cj
-class DBService <: GlobalTypeName  {
+class DBService  {
     DBService(let db:sql.connect){}
-    public static func getGlobalTypeName():String {
-        return "DBService"
-    }
 }
 
 DefaultInjector.provide<DBService>({injector => {
@@ -121,11 +114,8 @@ DefaultInjector.provide<DBService>("db_connect", {injector => {
 
 即时加载
 ```cj
-class Config <: GlobalTypeName {
+class Config {
     Config(let name:String){}
-    public static func getGlobalTypeName():String {
-        return "Config"
-    }
 }
 
 DefaultInjector.provideValue<Config>(Config("test"))
@@ -140,11 +130,9 @@ injector.invoke<Config>("Config")
 
 ### 健康检查
 ```
-class DBService <: GlobalTypeName & healthcheckableService  {
+class DBService <: healthcheckableService  {
     DBService(let db:sql.connect){}
-    public static func getGlobalTypeName():String {
-        return "DBService"
-    }
+
     // 自定义健康检查方法
     public func healthcheck():HealthState {
         let pong = this.db.ping()
@@ -166,11 +154,8 @@ println(state)
 
 ### 关闭服务
 ```cj
-class DBService <: GlobalTypeName & healthcheckableService  {
+class DBService <: healthcheckableService  {
     DBService(let db:sql.connect){}
-    public static func getGlobalTypeName():String {
-        return "DBService"
-    }
 }
 
 DefaultInjector.provide<DBService>({injector => {
