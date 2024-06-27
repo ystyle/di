@@ -64,7 +64,6 @@ main() {
         let wheel2 = i.invoke<Wheel>("wheel-2").getOrThrow()
         let wheel3 = i.invoke<Wheel>("wheel-3").getOrThrow()
         let wheel4 = i.invoke<Wheel>("wheel-4").getOrThrow()
-        // 泛型参数类型实现了TypeNameInterface接口的类型，可以获取Wheel.getTypeName名称的实例
         let wheel5 = i.invoke<Wheel>().getOrThrow()
         let wheel6 = i.invoke<Wheel>().getOrThrow()
         // 接口类型的泛型参数，只能使用指定名称的方式获取
@@ -84,8 +83,11 @@ main() {
     let car = injector.invoke<Car>("Car").getOrThrow()
     car.start()
 
-    let state = injector.healthCheck<Engine>("Car")
+    // 检查指定引擎组件的健康状态
+    let state = injector.healthCheck<Engine>("Engine")
     println(state)
+
+    // 检查所有组件的健康状态
     let states = injector.healthCheckAll()
     println(states)
 }
