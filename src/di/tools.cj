@@ -1,5 +1,5 @@
 package di
 
-public interface NewInstanceInterface<T> {
+public interface NewInstance<T> {
     static func new():T
 }

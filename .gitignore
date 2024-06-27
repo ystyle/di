@@ -1,8 +1,5 @@
 .vscode
-bin
-build
 unittest
-module-resolve.json
 .idea
 .cjpm-history
-module-lock.json
+target

@@ -14,7 +14,7 @@ interface Engine {
 // 引擎实现
 class EngineImplem  <: Engine & healthcheckableService {
     public func healthcheck():HealthState {
-        return Error("engine broken")
+        return HealthState.Error("engine broken")
     }
 }
 
@@ -49,7 +49,8 @@ class OptArgs <: InjectorOpts {
 }
 
 main() {
-    let injector = Injector(OptArgs())
+    let injector = Injector()
+    // let injector = Injector(OptArgs())
     // 使用类型的全限定名称注册
     injector.provideValue<Wheel>( Wheel(100))
     // 指定注册名称

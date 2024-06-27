@@ -9,10 +9,10 @@ extend Injector {
             return DefaultInjector
         }
     }
-    public func provide<T>():Unit where T <: NewInstanceInterface<T> {
+    public func provide<T>():Unit where T <: NewInstance<T> {
         this.provide<T>(TypeInfo.of<T>().qualifiedName)
     }
-    public func provide<T>(name:String):Unit where T <: NewInstanceInterface<T> {
+    public func provide<T>(name:String):Unit where T <: NewInstance<T> {
         this.provide<T>(name, {i => T.new()})
     }
     public func provide<T>(pvd:Provider<T>):Unit {
@@ -56,7 +56,7 @@ extend Injector {
 
     public func overrideValue<T>(name:String, value:T):Unit {
         let svc = ServiceEager<T>(name, value)
-        this.set(name, value)
+        this.set(name, svc)
         this.log?("service ${name} overridden")
     }
     public func invoke<T>():Option<T>  {
