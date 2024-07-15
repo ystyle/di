@@ -1,5 +1,7 @@
-from di import di.*
-from std import log.*
+package di_demo
+
+import di.*
+import std.log.*
 
 // 轮子
 class Wheel {
@@ -72,11 +74,11 @@ main() {
         return Some(car)
     })
     // 以命名方式注册接口类型的实现
-    injector.provide<Engine>("Engine", {i=>
+    injector.provide<Engine>("Engine", {_=>
         return Some(EngineImplem())
     })
     // 使用接口的全限定名注册其实现
-    injector.provide<Engine>({i => 
+    injector.provide<Engine>({_ => 
         return Some(EngineImplem())
     })
     // 以指定名称方式获取接口的实现

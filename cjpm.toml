@@ -2,7 +2,7 @@
 
 [package]
   cjc-version = "0.34.3"
-  compile-option = ""
+  compile-option = "-Woff unused"
   description = "nothing here"
   link-option = ""
   name = "di"

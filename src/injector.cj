@@ -1,7 +1,7 @@
 package di
 
-from std import sync.ReentrantMutex
-from std import collection.HashMap
+import std.sync.ReentrantMutex
+import std.collection.HashMap
 
 public interface InjectorOpts {
     func hookAfterRegistration(injector: Injector, serviceName: String): Unit

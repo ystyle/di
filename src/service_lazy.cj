@@ -1,4 +1,7 @@
 package di
+
+import std.sync.ReentrantMutex
+
 type Provider<T> = (Injector) -> Option<T> 
 
 public class ServiceLazy<T> <: Service<T> {

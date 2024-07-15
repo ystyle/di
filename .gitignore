@@ -3,3 +3,4 @@ unittest
 .idea
 .cjpm-history
 target
+.cache
