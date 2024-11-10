@@ -5,11 +5,6 @@ import std.reflect.TypeInfo
 public let DefaultInjector = Injector()
 
 extend Injector {
-    public prop default: Injector {
-        get() {
-            return DefaultInjector
-        }
-    }
     public func provide<T>(): Unit where T <: NewInstance<T> {
         this.provide<T>(TypeInfo.of<T>().qualifiedName)
     }

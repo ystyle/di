@@ -1,8 +1,8 @@
 [dependencies]
 
 [package]
-  cjc-version = "0.34.3"
-  compile-option = "-Woff unused"
+  cjc-version = "0.53.0"
+  compile-option = ""
   description = "nothing here"
   link-option = ""
   name = "di"

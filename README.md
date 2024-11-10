@@ -9,16 +9,23 @@
 - 匿名、命名服务
 - 即时或延迟加载
 - 依赖图解析
-- 默认依赖注入容器(let DefaultInjector = Injector())
+- 默认依赖注入容器(let injector = DefaultInjector)
 - 容器克隆(clone)
 - 服务覆盖
 
 >服务按调用顺序加载
 
 ### 快速开始
+
+引入
+```toml
+[dependencies]
+  di = { git = "https://github.com/ystyle/di", branch = "master"}
+```
+
 初始化容器
 ```cj
-from di import di.*
+import di.*
 
 main():Unit {
     let injector = Injector()
@@ -81,7 +88,7 @@ func NewCarService (injector:Injector):Option<CarService> {
 ```cj
 let injector = Injector()
 ```
-获取默认容器： `DefaultInjector` 或者  `let injector = Injector.default`
+获取默认容器： `let injector = DefaultInjector`
 
 #### 获取已注册的服务
 ```

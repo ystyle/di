@@ -36,7 +36,7 @@ class CarImplem <: Car {
     }
 }
 
-// 依赖注入的实现
+// 依赖注入参数的实现
 class OptArgs <: InjectorOpts {
     let logger = SimpleLogger()
     public func hookAfterRegistration(injector:Injector, serviceName:String):Unit {
@@ -51,8 +51,9 @@ class OptArgs <: InjectorOpts {
 }
 
 main() {
-    let injector = Injector()
-    // let injector = Injector(OptArgs())
+    // let injector = DefaultHasher // 全局默认实例
+    // let injector = Injector()    // 无参创建一个实例
+    let injector = Injector(OptArgs()) // 使用自定义参数实现
     // 使用类型的全限定名称注册
     injector.provideValue<Wheel>( Wheel(100))
     // 指定注册名称

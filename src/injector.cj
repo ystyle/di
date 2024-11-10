@@ -10,11 +10,11 @@ public interface InjectorOpts {
 }
 
 public class DefaultOptArgs <: InjectorOpts {
-    public func hookAfterRegistration(injector:Injector, serviceName:String):Unit {
+    public func hookAfterRegistration(_:Injector, _:String):Unit {
     }
-    public func hookAfterShutdown(injector:Injector, serviceName:String):Unit {
+    public func hookAfterShutdown(_:Injector, _:String):Unit {
     }
-    public func log(msg:String):Unit {
+    public func log(_:String):Unit {
     }
 }
 

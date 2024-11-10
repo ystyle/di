@@ -12,7 +12,7 @@ public struct ServiceEager<T> <: Service<T>{
         this._name = name
         this.instance = instance
     }
-    public func getInstance(injector:Injector):Option<T> {
+    public func getInstance(_:Injector):Option<T> {
         return this.instance
     }
     public func healthcheck():HealthState {
