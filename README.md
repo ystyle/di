@@ -1,5 +1,5 @@
 # di
->基于泛型的轻量级依赖注入框架， 移植自go的[`samber/do`](https://github.com/samber/do)
+>基于泛型的轻量级依赖注入框架， 移植自go的[`samber/do`](https://github.com/samber/do), 已支持仓颉1.0.0版本
 
 ### 特性
 - 服务注册

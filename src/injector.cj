@@ -1,6 +1,6 @@
 package di
 
-import std.sync.ReentrantMutex
+import std.sync.ReadWriteLock
 import std.collection.HashMap
 
 public interface InjectorOpts {
@@ -19,7 +19,7 @@ public class DefaultOptArgs <: InjectorOpts {
 }
 
 public class Injector {
-    let mu = ReentrantMutex()
+    let mu = ReadWriteLock()
     let services = HashMap<String, Any>()
     let orderedInvocation = HashMap<String, Int64>()
     var orderedInvocationIndex: Int64 = 0
@@ -38,7 +38,7 @@ public class Injector {
 
     public func listProvidedServices(): Array<String> {
         var names = Array<String>()
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             names = this.services.keys().toArray()
         }
         this.log?("exported list of services: ${names}")
@@ -46,7 +46,7 @@ public class Injector {
     }
     public func listInvokedServices(): Array<String> {
         var names = Array<String>()
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             names = this.orderedInvocation.keys().toArray()
         }
         this.log?("exported list of services: ${names}")
@@ -64,7 +64,7 @@ public class Injector {
     }
     func healthcheckImplem(name: String): HealthState {
         let service: Any
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             let opt = this.services.get(name)
             if (let None <- opt) {
                 this.log?("DI: could not find service `${name}`")
@@ -79,7 +79,7 @@ public class Injector {
     }
     public func shutdownAll(): ShutdownState {
         var m: HashMap<String, Int64>
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             m = this.orderedInvocation
         }
         this.log?("requested shutdown")
@@ -95,7 +95,7 @@ public class Injector {
     }
     func shutdownImplem(name: String): ShutdownState {
         var svc: Any
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             let opt = this.services.get(name)
             if (let Some(v) <- opt) {
                 svc = v
@@ -116,28 +116,28 @@ public class Injector {
     }
 
     func exists(name: String): Bool {
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             return this.services.contains(name)
         }
     }
     func get(name: String): Option<Any> {
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             return this.services.get(name)
         }
     }
     func set(name: String, svc: Any): Unit {
-        synchronized(this.mu) {
+        synchronized(this.mu.writeLock) {
             this.services[name] = svc
         }
         this.onServiceRegistration(name)
     }
     func remove(name: String): Unit {
-        synchronized(this.mu) {
+        synchronized(this.mu.writeLock) {
             this.services.remove(name)
         }
     }
     func forEach(fn: (String, Any) -> Unit) {
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             for ((name, svc) in this.services) {
                 fn(name, svc)
             }
@@ -161,7 +161,7 @@ public class Injector {
     }
     public func cloneWithOpts(opt: InjectorOpts): Injector {
         let injector = Injector(opt)
-        synchronized(this.mu) {
+        synchronized(this.mu.readLock) {
             for ((key, svc) in this.services) {
                 match (svc) {
                     case v: CloneableService => injector.services[key] = v.clone()
