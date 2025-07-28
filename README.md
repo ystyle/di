@@ -228,6 +228,7 @@ public interface healthcheckableService {
 public interface ShutdownableService {
     func shutdown():ShutdownState
 }
+```
 
 ## API文档
 
@@ -286,4 +287,3 @@ public interface ShutdownableService {
 - `healthcheckableService` - 健康检查接口，定义`healthcheck():HealthState`方法
 - `ShutdownableService` - 关闭服务接口，定义`shutdown():ShutdownState`方法
 - `InjectorOpts` - 注入器配置接口，定义hooks和日志回调
-```
