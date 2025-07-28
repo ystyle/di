@@ -1,15 +1,10 @@
 package di
-
 import std.sync.{Mutex}
 import std.ref.{WeakRef, CleanupPolicy}
-
-public type Provider<T> = (Injector) -> Option<T>
-
-public class ServiceLazy<T> <: Service<T> {
+public class ServiceLazyClass<T> <: Service<T> where T <: Object {
     let mu = Mutex()
     let _name:String
-    var instance:Option<T> = None
-    var built:Bool = false
+    var instance:Option<WeakRef<T>> = None
     let pvd:Provider<T>
     public prop name:String {
         get() {
@@ -22,11 +17,11 @@ public class ServiceLazy<T> <: Service<T> {
     }
     public func getInstance(injector:Injector):Option<T> {
         synchronized(this.mu){
-            if (this.built) {
-                return this.instance
-            }
-            if (this.build(injector)) {
-                return this.instance
+            if (let Some(v) <- this.instance) {
+                if (v.value.isNone()) {
+                    this.build(injector)
+                }
+                return v.value
             }
             return None
         }
@@ -34,15 +29,14 @@ public class ServiceLazy<T> <: Service<T> {
     private func build(injector:Injector): Bool {
        let result = this.pvd(injector)
         if (let Some(v) <- result) {
-            this.instance = result
-            this.built = true
+            this.instance = WeakRef<T>(v, CleanupPolicy.DEFERRED)
             return true
         }
         return false
     }
     public func healthcheck():HealthState {
         synchronized(this.mu) {
-            if (!this.built) {
+            if (this.instance?.value.isSome() ?? false) {
                 return HealthState.Health
             }
             let inst = this.instance.getOrThrow()
@@ -54,14 +48,13 @@ public class ServiceLazy<T> <: Service<T> {
     }
     public func shutdown():ShutdownState {
         synchronized(this.mu) {
-            if (!this.built) {
+            if (this.instance.isNone()) {
                 return ShutdownState.Shutdowned
             }
             let inst = this.instance.getOrThrow()
             match (inst) {
                 case v:ShutdownableService => 
-                    this.built = false
-                    this.instance = None
+                    this.instance?.clear()
                     v.shutdown()
                 case _ => ShutdownState.UnSupport
             }

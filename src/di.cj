@@ -22,6 +22,23 @@ extend Injector {
         this.set(name, svc)
         this.log?("service ${name} injected")
     }
+    public func provideClass<T>(): Unit where T <: NewInstance<T> & Object {
+        this.provideClass<T>(TypeInfo.of<T>().qualifiedName)
+    }
+    public func provideClass<T>(name: String): Unit where T <: NewInstance<T> & Object {
+        this.provideClass<T>(name, {_ => T.new()})
+    }
+    public func provideClass<T>(pvd: Provider<T>): Unit where T <: Object{
+        this.provideClass<T>(TypeInfo.of<T>().qualifiedName, pvd)
+    }
+    public func provideClass<T>(name: String, pvd: Provider<T>): Unit where T <: Object {
+        if (this.exists(name)) {
+            throw Exception("DI: service `${name}` has already been declared")
+        }
+        let svc = ServiceLazyClass<T>(name, pvd)
+        this.set(name, svc)
+        this.log?("service ${name} injected")
+    }
 
     public func provideValue<T>(value: T): Unit {
         provideValue<T>(TypeInfo.of<T>().qualifiedName, value)
@@ -42,6 +59,16 @@ extend Injector {
 
     public func overrideProvider<T>(name: String, pvd: Provider<T>): Unit {
         let svc = ServiceLazy<T>(name, pvd)
+        this.set(name, svc)
+        this.log?("service ${name} overridden")
+    }
+
+    public func overrideClass<T>(pvd: Provider<T>): Unit where T <: Object{
+        this.overrideClass<T>(TypeInfo.of<T>().qualifiedName, pvd)
+    }
+
+    public func overrideClass<T>(name: String, pvd: Provider<T>): Unit where T <: Object {
+        let svc = ServiceLazyClass<T>(name, pvd)
         this.set(name, svc)
         this.log?("service ${name} overridden")
     }

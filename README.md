@@ -9,6 +9,7 @@
 - 匿名、命名服务
 - 即时或延迟加载
 - 依赖图解析
+- 针对class的性能优化(使用`Injector.provideClass`方法)
 - 默认依赖注入容器(let injector = DefaultInjector)
 - 容器克隆(clone)
 - 服务覆盖
@@ -227,4 +228,62 @@ public interface healthcheckableService {
 public interface ShutdownableService {
     func shutdown():ShutdownState
 }
+
+## API文档
+
+### Injector类
+
+#### 构造函数
+- `Injector()` - 创建默认的注入器
+- `Injector(opt: InjectorOpts)` - 使用自定义配置创建注入器
+
+#### 服务注册方法
+- `provide<T>()` - 注册类型T的服务（使用默认构造函数）
+- `provide<T>(name: String)` - 使用指定名称注册类型T的服务
+- `provide<T>(pvd: Provider<T>)` - 使用自定义Provider注册服务
+- `provide<T>(name: String, pvd: Provider<T>)` - 使用指定名称和自定义Provider注册服务
+- `provideClass<T>()` - 注册类类型T的服务（针对类优化， 使用std.ref让gc自动管理销毁时机，策略为在内存不足时自动回收）
+- `provideClass<T>(name: String)` - 使用指定名称注册类类型服务
+- `provideClass<T>(pvd: Provider<T>)` - 使用自定义Provider注册类类型服务
+- `provideClass<T>(name: String, pvd: Provider<T>)` - 使用指定名称和自定义Provider注册类类型服务
+- `provideValue<T>(value: T)` - 注册即时加载的值服务
+- `provideValue<T>(name: String, value: T)` - 使用指定名称注册即时加载的值服务
+
+#### 服务覆盖方法
+- `overrideProvider<T>(pvd: Provider<T>)` - 覆盖已注册的服务
+- `overrideProvider<T>(name: String, pvd: Provider<T>)` - 使用指定名称覆盖服务
+- `overrideClass<T>(pvd: Provider<T>)` - 覆盖已注册的服务
+- `overrideClass<T>(name: String, pvd: Provider<T>)` - 使用指定名称覆盖服务
+- `overrideValue<T>(value: T)` - 覆盖已注册的即时加载值服务
+- `overrideValue<T>(name: String, value: T)` - 使用指定名称覆盖即时加载值服务
+
+#### 服务调用方法
+- `invoke<T>(): Option<T>` - 获取类型T的服务实例
+- `invoke<T>(name: String): Option<T>` - 获取指定名称的服务实例
+
+#### 健康检查方法
+- `healthCheck<T>(): HealthState` - 检查类型T的服务健康状态
+- `healthCheck<T>(name: String): HealthState` - 检查指定名称服务的健康状态
+- `healthCheckAll(): HashMap<String, HealthState>` - 检查所有注册服务的健康状态
+
+#### 服务关闭方法
+- `shutdown<T>(): ShutdownState` - 关闭类型T的服务
+- `shutdown<T>(name: String): ShutdownState` - 关闭指定名称的服务
+- `shutdownAll(): ShutdownState` - 关闭所有服务
+
+#### 服务查询方法
+- `listProvidedServices(): Array<String>` - 获取所有已注册服务的名称列表
+- `listInvokedServices(): Array<String>` - 获取所有已调用服务的名称列表
+
+#### 实用方法
+- `cloneWithOpts(opt: InjectorOpts): Injector` - 克隆注入器并应用新配置
+
+### 全局实例
+- `DefaultInjector` - 默认的全局注入器实例
+
+### 接口定义
+- `NewInstance<T>` - 用于定义无参构造的接口
+- `healthcheckableService` - 健康检查接口，定义`healthcheck():HealthState`方法
+- `ShutdownableService` - 关闭服务接口，定义`shutdown():ShutdownState`方法
+- `InjectorOpts` - 注入器配置接口，定义hooks和日志回调
 ```
