@@ -4,3 +4,5 @@ unittest
 .cjpm-history
 target
 .cache
+.log
+log.txt

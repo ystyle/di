@@ -1,27 +1,26 @@
 package di
 
 import std.sync.{Mutex}
-import std.ref.{WeakRef, CleanupPolicy}
 
 public type Provider<T> = (Injector) -> Option<T>
 
 public class ServiceLazy<T> <: Service<T> {
     let mu = Mutex()
-    let _name:String
-    var instance:Option<T> = None
-    var built:Bool = false
-    let pvd:Provider<T>
-    public prop name:String {
+    let _name: String
+    var instance: Option<T> = None
+    var built: Bool = false
+    let pvd: Provider<T>
+    public prop name: String {
         get() {
             this._name
         }
     }
-    public init(name:String, pvd:Provider<T>) {
+    public init(name: String, pvd: Provider<T>) {
         this._name = name
         this.pvd = pvd
     }
-    public func getInstance(injector:Injector):Option<T> {
-        synchronized(this.mu){
+    public func getInstance(injector: Injector): Option<T> {
+        synchronized(this.mu) {
             if (this.built) {
                 return this.instance
             }
@@ -31,8 +30,8 @@ public class ServiceLazy<T> <: Service<T> {
             return None
         }
     }
-    private func build(injector:Injector): Bool {
-       let result = this.pvd(injector)
+    private func build(injector: Injector): Bool {
+        let result = this.pvd(injector)
         if (let Some(v) <- result) {
             this.instance = result
             this.built = true
@@ -40,34 +39,40 @@ public class ServiceLazy<T> <: Service<T> {
         }
         return false
     }
-    public func healthcheck():HealthState {
+    public func healthcheck(): HealthState {
         synchronized(this.mu) {
             if (!this.built) {
                 return HealthState.Health
             }
-            let inst = this.instance.getOrThrow()
-            match (inst) {
-                case v:healthcheckableService => v.healthcheck()
-                case _ => HealthState.UnSupport
+            if (let Some(inst) <- this.instance) {
+                match (inst) {
+                    case v: healthcheckableService => v.healthcheck()
+                    case _ => HealthState.UnSupport
+                }
+            } else {
+                HealthState.Health
             }
         }
     }
-    public func shutdown():ShutdownState {
+    public func shutdown(): ShutdownState {
         synchronized(this.mu) {
             if (!this.built) {
                 return ShutdownState.Shutdowned
             }
-            let inst = this.instance.getOrThrow()
-            match (inst) {
-                case v:ShutdownableService => 
-                    this.built = false
-                    this.instance = None
-                    v.shutdown()
-                case _ => ShutdownState.UnSupport
+            if (let Some(inst) <- this.instance) {
+                match (inst) {
+                    case v: ShutdownableService =>
+                        this.built = false
+                        this.instance = None
+                        v.shutdown()
+                    case _ => ShutdownState.UnSupport
+                }
+            } else {
+                ShutdownState.Shutdowned
             }
         }
     }
-    public func clone():Any {
+    public func clone(): Any {
         return ServiceLazy<T>(this.name, this.pvd)
     }
-}  
+}

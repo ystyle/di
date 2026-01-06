@@ -28,7 +28,7 @@ extend Injector {
     public func provideClass<T>(name: String): Unit where T <: NewInstance<T> & Object {
         this.provideClass<T>(name, {_ => T.new()})
     }
-    public func provideClass<T>(pvd: Provider<T>): Unit where T <: Object{
+    public func provideClass<T>(pvd: Provider<T>): Unit where T <: Object {
         this.provideClass<T>(TypeInfo.of<T>().qualifiedName, pvd)
     }
     public func provideClass<T>(name: String, pvd: Provider<T>): Unit where T <: Object {
@@ -41,7 +41,7 @@ extend Injector {
     }
 
     public func provideValue<T>(value: T): Unit {
-        provideValue<T>(TypeInfo.of<T>().qualifiedName, value)
+        this.provideValue<T>(TypeInfo.of<T>().qualifiedName, value)
     }
 
     public func provideValue<T>(name: String, value: T): Unit {
@@ -63,7 +63,7 @@ extend Injector {
         this.log?("service ${name} overridden")
     }
 
-    public func overrideClass<T>(pvd: Provider<T>): Unit where T <: Object{
+    public func overrideClass<T>(pvd: Provider<T>): Unit where T <: Object {
         this.overrideClass<T>(TypeInfo.of<T>().qualifiedName, pvd)
     }
 
@@ -99,7 +99,7 @@ extend Injector {
                     this.log?("service ${name} invoked")
                     return instance
                 case _ =>
-                    this.log?(this.serviceNotFound(name).message)
+                    this.log?(this.serviceNotFound(name))
                     return None
             }
         }

@@ -10,11 +10,11 @@ public interface InjectorOpts {
 }
 
 public class DefaultOptArgs <: InjectorOpts {
-    public func hookAfterRegistration(_:Injector, _:String):Unit {
+    public func hookAfterRegistration(_: Injector, _: String): Unit {
     }
-    public func hookAfterShutdown(_:Injector, _:String):Unit {
+    public func hookAfterShutdown(_: Injector, _: String): Unit {
     }
-    public func log(_:String):Unit {
+    public func log(_: String): Unit {
     }
 }
 
@@ -63,18 +63,22 @@ public class Injector {
         return results
     }
     func healthcheckImplem(name: String): HealthState {
-        let service: Any
+        var service: Option<Any> = None
         synchronized(this.mu.readLock) {
             let opt = this.services.get(name)
             if (let None <- opt) {
                 this.log?("DI: could not find service `${name}`")
                 return HealthState.Error("DI: could not find service `${name}`")
             }
-            service = opt.getOrThrow()
+            service = opt
         }
-        match (service) {
-            case svc: healthcheckableService => svc.healthcheck()
-            case _ => HealthState.UnSupport
+        if (let Some(svc) <- service) {
+            match (svc) {
+                case s: healthcheckableService => s.healthcheck()
+                case _ => HealthState.UnSupport
+            }
+        } else {
+            HealthState.Error("DI: could not find service `${name}`")
         }
     }
     public func shutdownAll(): ShutdownState {
@@ -143,9 +147,12 @@ public class Injector {
             }
         }
     }
-    func serviceNotFound(name: String): Exception {
-        let names: Array<String> = this.services.keys().toArray()
-        return Exception("DI: could not find service `${name}`, available services: ${names}")
+    func serviceNotFound(name: String): String {
+        let names: Array<String>
+        synchronized(this.mu.readLock) {
+            names = this.services.keys().toArray()
+        }
+        return "DI: could not find service `${name}`, available services: ${names}"
     }
     func onServiceInvoke(name: String) {
         if (!this.orderedInvocation.contains(name)) {
